@@ -1,6 +1,6 @@
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { catchError, map, Observable, of, switchMap, tap, throwError } from 'rxjs';
+import { catchError, map, Observable, of, shareReplay, switchMap, tap, throwError } from 'rxjs';
 import { Product } from './product';
 import { ProductData } from './product-data';
 import { HttpErrorService } from '../utilities/http-error.service';
@@ -20,16 +20,13 @@ export class ProductService {
     
   }
 
-  getProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.productsUrl)
+  readonly products$ = this.http.get<Product[]>(this.productsUrl)
     .pipe(
-      tap(() => console.log("In Http Get Products")),
-      catchError(err => {
-        console.error(err);
-        return this.handleError(err);
-      }) // The catchError function expects to return a replacement observable
+      tap((p) => console.log(JSON.stringify(p))),
+      shareReplay(1),
+      tap(() => console.log("After sharePlay")),
+      catchError(err => this.handleError(err))
     );
-  }
 
   getProduct(id: number): Observable<Product> {
     const url = `${this.productsUrl}/${id}`;
