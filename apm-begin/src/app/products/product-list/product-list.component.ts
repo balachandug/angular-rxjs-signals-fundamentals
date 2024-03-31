@@ -20,9 +20,6 @@ export class ProductListComponent {
   pageTitle = 'Products';
   errorMessage = '';
 
-  // Selected product id to highlight the entry
-  selectedProductId: number = 0;
-
   readonly products$ = this.productService.products$
                         .pipe(
                           // tap((p) => console.log(JSON.stringify(p))),
@@ -31,9 +28,10 @@ export class ProductListComponent {
                             return EMPTY;
                           }
                         ))
-
+  readonly selectedProduct$ = this.productService.productSelected$;
   onSelected(productId: number): void {
-    this.selectedProductId = productId;
+    // this.selectedProductId = productId;
+    this.productService.productSelected(productId);
   }
 
   
